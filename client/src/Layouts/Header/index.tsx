@@ -1,4 +1,4 @@
-// components/Header
+// Layouts/Header
 
 import React from 'react';
 import Button from '@mui/material/Button';
