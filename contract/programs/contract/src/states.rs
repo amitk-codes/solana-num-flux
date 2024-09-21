@@ -10,5 +10,5 @@ pub struct UserProfile{
 #[derive(Default)]
 pub struct StoredNumAccount{
   pub authority: Pubkey,
-  pub stored_num: i64,
+  pub stored_num: u64,
 }
