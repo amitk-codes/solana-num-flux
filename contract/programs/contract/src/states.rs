@@ -12,3 +12,9 @@ pub struct StoredNumAccount{
   pub authority: Pubkey,
   pub stored_num: u64,
 }
+
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub enum ShiftDirection {
+    Increment,
+    Decrement,
+}
