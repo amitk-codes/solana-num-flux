@@ -5,8 +5,6 @@ import { Keypair, LAMPORTS_PER_SOL, SystemProgram, PublicKey } from "@solana/web
 import { assert } from "chai";
 
 describe("solana_num_flux", () => {
-  // Configure the client to use the local cluster.
-
   const provider = anchor.AnchorProvider.env()
   anchor.setProvider(provider);
 
@@ -14,65 +12,22 @@ describe("solana_num_flux", () => {
 
   const program = anchor.workspace.SolanaNumFlux as Program<SolanaNumFlux>;
 
-  // Technically, we have to check whether user has the authority of the fetched account 
-  it("initializes the user profile", async () => {
-    const user = Keypair.generate();
-    const { publicKey: userPubkey } = user
+  let user: Keypair
+  let userProfilePDA: PublicKey;
 
-    // Requesting the airdrop so that it can pay the tx fees and cover the rent-exemption
-    const airdropTxSignature = await connection.requestAirdrop(userPubkey, 2 * LAMPORTS_PER_SOL);
-
-    // We have requested the airdrop but we have to wait till this is confirmed
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash()
-    await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: airdropTxSignature }, 'confirmed');
+  async function createUserProfileAndReturnUserProfilePDA() {
+    await requestAirdrop(user.publicKey);
 
     const [userProfilePDA, bump] = PublicKey.findProgramAddressSync(
       [Buffer.from("USER_STATE"), user.publicKey.toBuffer()],
       program.programId
     )
 
-    const initializeAccounts = {
-      authority: userPubkey,
+    const initializeUserAccounts = {
+      authority: user.publicKey,
       userProfile: userProfilePDA,
       systemProgram: SystemProgram.programId
     }
-    
-    await program.methods
-      .initializeUser()
-      .accounts(initializeAccounts)
-      .signers([user])
-      .rpc();
-
-    const fetchedUserProfile = await program.account.userProfile.fetch(userProfilePDA);
-
-    assert.ok(fetchedUserProfile.authority.equals(userPubkey));
-  });
-
-  // Test to initialize the stored number account
-  it("initializes the stored number account", async () => {
-    const user = Keypair.generate();
-    const { publicKey: userPubkey } = user
-
-    const airdropTxSignature = await connection.requestAirdrop(userPubkey, 2 * LAMPORTS_PER_SOL);
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash()
-    await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: airdropTxSignature }, 'confirmed');
-
-    const [userProfilePDA, userProfileBump] = PublicKey.findProgramAddressSync(
-      [Buffer.from("USER_STATE"), user.publicKey.toBuffer()],
-      program.programId
-    );
-
-    const [storedNumPDA, storedNumBump] = PublicKey.findProgramAddressSync(
-      [Buffer.from("STORED_NUM_STATE"), user.publicKey.toBuffer()],
-      program.programId
-    );
-
-    // Initialize user profile first
-    const initializeUserAccounts = {
-      authority: userPubkey,
-      userProfile: userProfilePDA,
-      systemProgram: SystemProgram.programId
-    };
 
     await program.methods
       .initializeUser()
@@ -80,9 +35,45 @@ describe("solana_num_flux", () => {
       .signers([user])
       .rpc();
 
-    // Initialize stored number account
+    return userProfilePDA
+  }
+
+  async function requestAirdrop(accountPubkey: PublicKey) {
+    // Requesting the airdrop so that it can pay the tx fees and cover the rent-exemption
+    const airdropTxSignature = await connection.requestAirdrop(accountPubkey, 2 * LAMPORTS_PER_SOL);
+
+    // We have requested the airdrop but we have to wait till this is confirmed
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+    await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: airdropTxSignature });
+  }
+
+  // This will run before the whole test is initialized
+  before(async () => {
+    user = Keypair.generate();
+    userProfilePDA = await createUserProfileAndReturnUserProfilePDA()
+  })
+
+  // This will run before each test is started to run
+  beforeEach(async () => {
+    await requestAirdrop(user.publicKey)
+  })
+
+  // Technically, we have to check whether user has the authority of the fetched account 
+  it("fetches the user profile after it is successfully initialized", async () => {
+    const fetchedUserProfile = await program.account.userProfile.fetch(userProfilePDA);
+    assert.ok(fetchedUserProfile.authority.equals(user.publicKey))
+  });
+
+  // Technically, we have to check whether user has the authority of the fetch stored num account and stored num value is 0
+  it("initializes the stored number account", async () => {
+
+    const [storedNumPDA, bump] = PublicKey.findProgramAddressSync(
+      [Buffer.from("STORED_NUM_STATE"), user.publicKey.toBuffer()],
+      program.programId
+    );
+
     const initializeStoredNumAccounts = {
-      authority: userPubkey,
+      authority: user.publicKey,
       userProfile: userProfilePDA,
       storedNumAccount: storedNumPDA,
       systemProgram: SystemProgram.programId
@@ -94,9 +85,11 @@ describe("solana_num_flux", () => {
       .signers([user])
       .rpc();
 
-    // Fetch and assert the stored number account
     const fetchedStoredNumAccount = await program.account.storedNumAccount.fetch(storedNumPDA);
-    assert.ok(fetchedStoredNumAccount.authority.equals(userPubkey));
+
+    assert.ok(fetchedStoredNumAccount.authority.equals(user.publicKey));
     assert.strictEqual(fetchedStoredNumAccount.storedNum.toString(), '0');
   });
+
+
 });
