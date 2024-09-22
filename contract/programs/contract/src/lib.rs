@@ -30,6 +30,15 @@ pub mod solana_num_flux {
         Ok(())
     }
 
+    pub fn shift_stored_num(ctx: Context<ShiftStoredNum>, direction: ShiftDirection) -> Result<()> {
+        let stored_num_account = &mut ctx.accounts.stored_num_account;
+
+        match direction {
+            ShiftDirection::Increment => stored_num_account.stored_num.checked_add(1).unwrap(),
+            ShiftDirection::Decrement => stored_num_account.stored_num.checked_sub(1).unwrap(),
+        };
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -76,4 +85,30 @@ pub struct  InitializeStoredNum<'info> {
 
     pub system_program: Program<'info, System>
 
+}
+
+
+#[derive(Accounts)]
+#[instruction(direction: ShiftDirection)]
+pub struct ShiftStoredNum<'info>{
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [USER_TAG, authority.key().as_ref()],
+        bump,
+        has_one = authority
+    )]
+    pub user_profile: Box<Account<'info, UserProfile>>,
+
+    #[account(
+        mut,
+        seeds = [STORED_NUM_TAG, authority.key().as_ref()],
+        bump,
+        has_one = authority
+    )]
+    pub stored_num_account: Box<Account<'info, StoredNumAccount>>,
+
+    pub system_program: Program<'info, System>,
 }
