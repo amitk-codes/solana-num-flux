@@ -26,26 +26,77 @@ describe("solana_num_flux", () => {
     const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash()
     await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: airdropTxSignature }, 'confirmed');
 
-
     const [userProfilePDA, bump] = PublicKey.findProgramAddressSync(
       [Buffer.from("USER_STATE"), user.publicKey.toBuffer()],
       program.programId
     )
 
-    const initilizeAccounts = {
+    const initializeAccounts = {
       authority: userPubkey,
       userProfile: userProfilePDA,
       systemProgram: SystemProgram.programId
     }
+    
     await program.methods
       .initializeUser()
-      .accounts(initilizeAccounts)
+      .accounts(initializeAccounts)
       .signers([user])
       .rpc();
 
     const fetchedUserProfile = await program.account.userProfile.fetch(userProfilePDA);
 
     assert.ok(fetchedUserProfile.authority.equals(userPubkey));
+  });
 
+  // Test to initialize the stored number account
+  it("initializes the stored number account", async () => {
+    const user = Keypair.generate();
+    const { publicKey: userPubkey } = user
+
+    const airdropTxSignature = await connection.requestAirdrop(userPubkey, 2 * LAMPORTS_PER_SOL);
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash()
+    await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature: airdropTxSignature }, 'confirmed');
+
+    const [userProfilePDA, userProfileBump] = PublicKey.findProgramAddressSync(
+      [Buffer.from("USER_STATE"), user.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const [storedNumPDA, storedNumBump] = PublicKey.findProgramAddressSync(
+      [Buffer.from("STORED_NUM_STATE"), user.publicKey.toBuffer()],
+      program.programId
+    );
+
+    // Initialize user profile first
+    const initializeUserAccounts = {
+      authority: userPubkey,
+      userProfile: userProfilePDA,
+      systemProgram: SystemProgram.programId
+    };
+
+    await program.methods
+      .initializeUser()
+      .accounts(initializeUserAccounts)
+      .signers([user])
+      .rpc();
+
+    // Initialize stored number account
+    const initializeStoredNumAccounts = {
+      authority: userPubkey,
+      userProfile: userProfilePDA,
+      storedNumAccount: storedNumPDA,
+      systemProgram: SystemProgram.programId
+    };
+
+    await program.methods
+      .initializeStoredNum()
+      .accounts(initializeStoredNumAccounts)
+      .signers([user])
+      .rpc();
+
+    // Fetch and assert the stored number account
+    const fetchedStoredNumAccount = await program.account.storedNumAccount.fetch(storedNumPDA);
+    assert.ok(fetchedStoredNumAccount.authority.equals(userPubkey));
+    assert.strictEqual(fetchedStoredNumAccount.storedNum.toString(), '0');
   });
 });
