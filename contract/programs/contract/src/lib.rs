@@ -34,8 +34,8 @@ pub mod solana_num_flux {
         let stored_num_account = &mut ctx.accounts.stored_num_account;
 
         match direction {
-            ShiftDirection::Increment => stored_num_account.stored_num.checked_add(1).unwrap(),
-            ShiftDirection::Decrement => stored_num_account.stored_num.checked_sub(1).unwrap(),
+            ShiftDirection::Increment => stored_num_account.stored_num = stored_num_account.stored_num.checked_add(1).unwrap(),
+            ShiftDirection::Decrement => stored_num_account.stored_num = stored_num_account.stored_num.checked_sub(1).unwrap(),
         };
         Ok(())
     }
