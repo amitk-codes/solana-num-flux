@@ -18,19 +18,20 @@ export const Header = () => {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
         {/* Logo */}
-        <Typography variant="h6" sx={{ color: 'black', fontWeight: 'bold' }}>
+        <div className='text-xl font-bold bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 bg-clip-text text-transparent select-none'>
           Solana NumFlux
-        </Typography>
+        </div>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
+
+        <div className='flex gap-4'>
           {/* Initialize Button */}
-          <Button variant="outlined" sx={{ borderColor: 'blue', color: 'blue' }}>
-            Initialize
-          </Button>
+          <button className='border border-theme-default rounded text-theme-default font-bold px-6 shadow-[0_0_10px_0px_#512da8] active:shadow-none transition-all duration-300'>
+            Initialize Profile
+          </button>
 
           {/* Wallet Connect Button */}
-          <WalletMultiButtonDynamic />
-        </Box>
+          <WalletMultiButtonDynamic style={{ maxHeight: '40px' }} />
+        </div>
       </Toolbar>
     </AppBar>
   );
