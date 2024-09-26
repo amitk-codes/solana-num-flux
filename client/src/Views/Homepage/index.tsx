@@ -12,14 +12,7 @@ export default function Homepage() {
 
   return (
     <main
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-        gap: '24px',
-      }}
+      className='flex flex-col items-center justify-center p-4 gap-6 absolute-center'
     >
       {/* Retrieve Button */}
       <button className='retrieve-button' onClick={handleRetrieve}>
