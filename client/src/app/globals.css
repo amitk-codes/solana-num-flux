@@ -5,6 +5,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --theme-default: #512da8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,4 +25,165 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.increment-btn {
+  --primary: 34, 197, 94;
+  --secondary: 22, 101, 52;
+  width: 60px;
+  height: 50px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  outline: 10px solid rgb(var(--primary), .5);
+  border-radius: 100%;
+  position: relative;
+  transition: .3s;
+}
+
+.increment-btn .back {
+  background: rgb(var(--secondary));
+  border-radius: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.increment-btn .front {
+  background: linear-gradient(0deg, rgba(var(--primary), .6) 20%, rgba(var(--primary)) 50%);
+  box-shadow: 0 .5em 1em -0.2em rgba(var(--secondary), .5);
+  border-radius: 100%;
+  position: absolute;
+  border: 1px solid rgb(var(--secondary));
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: inherit;
+  transform: translateY(-15%);
+  transition: .15s;
+  color: rgb(var(--secondary));
+}
+
+.increment-btn:active .front {
+  transform: translateY(0%);
+  box-shadow: 0 0;
+}
+
+.decrement-btn {
+  --primary: 255, 90, 120;
+  --secondary: 150, 50, 60;
+  width: 60px;
+  height: 50px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  outline: 10px solid rgb(var(--primary), .5);
+  border-radius: 100%;
+  position: relative;
+  transition: .3s;
+}
+
+.decrement-btn .back {
+  background: rgb(var(--secondary));
+  border-radius: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.decrement-btn .front {
+  background: linear-gradient(0deg, rgba(var(--primary), .6) 20%, rgba(var(--primary)) 50%);
+  box-shadow: 0 .5em 1em -0.2em rgba(var(--secondary), .5);
+  border-radius: 100%;
+  position: absolute;
+  border: 1px solid rgb(var(--secondary));
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: inherit;
+  transform: translateY(-15%);
+  transition: .15s;
+  color: rgb(var(--secondary));
+}
+
+.decrement-btn:active .front {
+  transform: translateY(0%);
+  box-shadow: 0 0;
+}
+
+.retrieve-button {
+  display: inline-block;
+  width: 150px;
+  height: 50px;
+  border-radius: 50px;
+  border: 0.1px solid black;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease-in;
+  z-index: 1;
+  box-shadow: 5px 5px 10px #949494,
+    -5px -5px 10px #ffffff;
+}
+
+.retrieve-button::before,
+.retrieve-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 100%;
+  transform: skew(15deg);
+  transition: all 0.5s;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.retrieve-button::before {
+  left: -10px;
+  background: var(--theme-default);
+}
+
+.retrieve-button::after {
+  right: -10px;
+  background: var(--theme-default);
+}
+
+.retrieve-button:hover::before,
+.retrieve-button:hover::after {
+  width: 58%;
+}
+
+.retrieve-button:hover span {
+  color: white;
+  transition: 0.3s;
+}
+
+.retrieve-button span {
+  color: black;
+  font-size: 18px;
+  transition: all 0.3s ease-in;
+}
+
+.retrieve-button:active {
+  scale: 0.8;
 }
