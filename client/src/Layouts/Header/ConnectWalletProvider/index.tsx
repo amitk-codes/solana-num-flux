@@ -9,10 +9,10 @@ import { useMemo } from "react";
 export default function ConnectWalletProvider({ children }: { children: React.ReactNode }) {
   const network = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  const supportedWallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter(), new TorusWalletAdapter(), new MathWalletAdapter(), new LedgerWalletAdapter()], [network])
+  const supportedWallets = useMemo(() => [new PhantomWalletAdapter(), new SolflareWalletAdapter(), new TorusWalletAdapter(), new LedgerWalletAdapter()], [network])
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={supportedWallets}>
+      <WalletProvider autoConnect wallets={supportedWallets}>
         <WalletModalProvider>
           {children}
         </WalletModalProvider>
