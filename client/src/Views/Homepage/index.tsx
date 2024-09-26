@@ -1,10 +1,7 @@
 "use client";
 import React, { useState } from 'react';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
+import CustomShiftButton from '@/components/CustomShiftButton';
 
 export default function Homepage() {
   const [value, setValue] = useState(0);
@@ -25,31 +22,22 @@ export default function Homepage() {
       }}
     >
       {/* Retrieve Button */}
-      <Button
-        variant="contained"
-        sx={{ backgroundColor: 'green', color: 'white' }}
-        onClick={handleRetrieve}
-      >
-        Retrieve
-      </Button>
+      <button className='retrieve-button' onClick={handleRetrieve}>
+        <span> Retrieve
+        </span>
+      </button>
 
-      {/* Value Display with increment/decrement */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <IconButton
-          color="secondary"
-          onClick={() => setValue((prev) => prev - 1)}
-        >
-          <RemoveIcon />
-        </IconButton>
-        <Typography variant="h4" sx={{ textAlign: 'center', color: 'black' }}>
+      {/* Decrement Button */}
+      <div className='flex items-center gap-5'>
+        <CustomShiftButton type='decrement' />
+
+        {/* Value Display */}
+        <Typography variant="h4" sx={{ textAlign: 'center', color: 'black', minWidth: '100px' }}>
           {value}
         </Typography>
-        <IconButton
-          color="primary"
-          onClick={() => setValue((prev) => prev + 1)}
-        >
-          <AddIcon />
-        </IconButton>
+
+        {/* Increment Button */}
+        <CustomShiftButton type='increment' />
       </div>
     </main>
   );
