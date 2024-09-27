@@ -13,7 +13,21 @@ pub struct StoredNumAccount{
   pub stored_num: u64,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize)]
+#[account]
+#[derive(Default)]
+pub struct HistoryAccount{
+  pub authority: Pubkey,
+  pub records: Vec<OperationsRecord>,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct OperationsRecord{
+  pub timestamp: i64,
+  pub final_value: u64,
+  pub shift_direction: ShiftDirection,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub enum ShiftDirection {
     Increment,
     Decrement,
