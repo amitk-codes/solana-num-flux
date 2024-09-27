@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 import "@solana/wallet-adapter-react-ui/styles.css"
 import dynamic from 'next/dynamic';
+import { MobileDrawer } from './MobileDrawer';
 
 // dynamic import for Solana Wallet Button
 const WalletMultiButtonDynamic = dynamic(
@@ -23,7 +24,7 @@ export const Header = () => {
         </div>
 
 
-        <div className='flex gap-4'>
+        <div className='hidden lg:flex gap-4'>
           {/* Initialize Button */}
           <button className='border border-theme-default rounded text-theme-default font-bold px-6 shadow-[0_0_10px_0px_#512da8] active:shadow-none transition-all duration-300 min-h-[40px]'>
             Initialize Profile
@@ -31,6 +32,10 @@ export const Header = () => {
 
           {/* Wallet Connect Button */}
           <WalletMultiButtonDynamic style={{ maxHeight: '40px' }} />
+        </div>
+
+        <div className='flex lg:hidden'>
+          <MobileDrawer />
         </div>
       </Toolbar>
     </AppBar>
