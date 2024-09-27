@@ -20,23 +20,45 @@ pub mod solana_num_flux {
         Ok(())
     }
 
-
     pub fn initialize_stored_num(ctx: Context<InitializeStoredNum>) -> Result<()> {
         let stored_num_account = &mut ctx.accounts.stored_num_account;
+        let history_account = &mut ctx.accounts.history_account;
+
         stored_num_account.authority = ctx.accounts.authority.key();
+        history_account.authority = ctx.accounts.authority.key();
 
         // the initial value of stored_num should be 0
         stored_num_account.stored_num = 0;
+
+        // the history account should be empty in starting
+        history_account.records = Vec::new();
         Ok(())
     }
 
     pub fn shift_stored_num(ctx: Context<ShiftStoredNum>, direction: ShiftDirection) -> Result<()> {
         let stored_num_account = &mut ctx.accounts.stored_num_account;
+        let history_account = &mut ctx.accounts.history_account;
 
         match direction {
-            ShiftDirection::Increment => stored_num_account.stored_num = stored_num_account.stored_num.checked_add(1).unwrap(),
-            ShiftDirection::Decrement => stored_num_account.stored_num = stored_num_account.stored_num.checked_sub(1).unwrap(),
+            ShiftDirection::Increment => {
+                stored_num_account.stored_num =
+                    stored_num_account.stored_num.checked_add(1).unwrap()
+            }
+            ShiftDirection::Decrement => {
+                stored_num_account.stored_num =
+                    stored_num_account.stored_num.checked_sub(1).unwrap()
+            }
         };
+
+        let clock = Clock::get().unwrap(); // fetching current timestamp
+        let record = OperationsRecord {
+            timestamp: clock.unix_timestamp,
+            shift_direction: direction,
+            final_value: stored_num_account.stored_num,
+        };
+
+        history_account.records.push(record);
+
         Ok(())
     }
 }
@@ -59,10 +81,9 @@ pub struct InitializeUser<'info> {
     pub system_program: Program<'info, System>,
 }
 
-
 #[derive(Accounts)]
 #[instruction()]
-pub struct  InitializeStoredNum<'info> {
+pub struct InitializeStoredNum<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
 
@@ -83,14 +104,21 @@ pub struct  InitializeStoredNum<'info> {
     )]
     pub stored_num_account: Box<Account<'info, StoredNumAccount>>,
 
-    pub system_program: Program<'info, System>
+    #[account(
+        init,
+        seeds = [HISTORY_TAG, authority.key().as_ref()],
+        bump,
+        payer = authority,
+        space = 8 + (10 * (std::mem::size_of::<HistoryAccount>()))
+    )]
+    pub history_account: Box<Account<'info, HistoryAccount>>,
 
+    pub system_program: Program<'info, System>,
 }
-
 
 #[derive(Accounts)]
 #[instruction(direction: ShiftDirection)]
-pub struct ShiftStoredNum<'info>{
+pub struct ShiftStoredNum<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
 
@@ -109,6 +137,14 @@ pub struct ShiftStoredNum<'info>{
         has_one = authority
     )]
     pub stored_num_account: Box<Account<'info, StoredNumAccount>>,
+
+    #[account(
+        mut,
+        seeds = [HISTORY_TAG, authority.key().as_ref()],
+        bump,
+        has_one = authority
+    )]
+    pub history_account: Box<Account<'info, HistoryAccount>>,
 
     pub system_program: Program<'info, System>,
 }
