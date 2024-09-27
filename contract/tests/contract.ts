@@ -15,20 +15,22 @@ describe("solana_num_flux", () => {
   let user: Keypair;
   let userProfilePDA: PublicKey;
   let storedNumPDA: PublicKey;
+  let historyPDA: PublicKey;
 
+  // Function to initialize the user profile and return the userProfilePDA
   async function createUserProfileAndReturnUserProfilePDA() {
     await requestAirdrop(user.publicKey);
 
     const [userProfilePDA, bump] = PublicKey.findProgramAddressSync(
       [Buffer.from("USER_STATE"), user.publicKey.toBuffer()],
       program.programId
-    )
+    );
 
     const initializeUserAccounts = {
       authority: user.publicKey,
       userProfile: userProfilePDA,
-      systemProgram: SystemProgram.programId
-    }
+      systemProgram: SystemProgram.programId,
+    };
 
     await program.methods
       .initializeUser()
@@ -36,12 +38,18 @@ describe("solana_num_flux", () => {
       .signers([user])
       .rpc();
 
-    return userProfilePDA
+    return userProfilePDA;
   }
 
+  // Function to initialize the stored number account and return both storedNumPDA and historyPDA
   async function createStoredNumAccountAndReturnItsPDA() {
     const [storedNumPDA, bump] = PublicKey.findProgramAddressSync(
       [Buffer.from("STORED_NUM_STATE"), user.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const [historyPDA, _] = PublicKey.findProgramAddressSync(
+      [Buffer.from("HISTORY_STATE"), user.publicKey.toBuffer()],
       program.programId
     );
 
@@ -49,7 +57,7 @@ describe("solana_num_flux", () => {
       authority: user.publicKey,
       userProfile: userProfilePDA,
       storedNumAccount: storedNumPDA,
-      systemProgram: SystemProgram.programId
+      systemProgram: SystemProgram.programId,
     };
 
     await program.methods
@@ -58,7 +66,7 @@ describe("solana_num_flux", () => {
       .signers([user])
       .rpc();
 
-    return storedNumPDA;
+    return { storedNumPDA, historyPDA };
   }
 
   async function requestAirdrop(accountPubkey: PublicKey) {
@@ -74,7 +82,9 @@ describe("solana_num_flux", () => {
   before(async () => {
     user = Keypair.generate();
     userProfilePDA = await createUserProfileAndReturnUserProfilePDA();
-    storedNumPDA = await createStoredNumAccountAndReturnItsPDA();
+    const pdas = await createStoredNumAccountAndReturnItsPDA();
+    storedNumPDA = pdas.storedNumPDA;
+    historyPDA = pdas.historyPDA;
   });
 
   // This will run before each test is started to run
@@ -88,14 +98,14 @@ describe("solana_num_flux", () => {
     assert.ok(fetchedUserProfile.authority.equals(user.publicKey));
   });
 
-  // Technically, we have to check whether user has the authority of the fetch stored num account and stored num value is 0
+  // Technically, we have to check whether user has the authority of the fetched stored num account and stored num value is 0
   it("fetches the stored num account after it is successfully initialized", async () => {
     const fetchedStoredNumAccount = await program.account.storedNumAccount.fetch(storedNumPDA);
     assert.ok(fetchedStoredNumAccount.authority.equals(user.publicKey));
     assert.strictEqual(fetchedStoredNumAccount.storedNum.toString(), '0');
   });
 
-  it("increments the stored number", async () => {
+  it("increments the stored number and records the operation in history", async () => {
     const shiftStoredNumAccounts = {
       authority: user.publicKey,
       userProfile: userProfilePDA,
@@ -111,9 +121,18 @@ describe("solana_num_flux", () => {
 
     const fetchedStoredNumAccount = await program.account.storedNumAccount.fetch(storedNumPDA);
     assert.strictEqual(fetchedStoredNumAccount.storedNum.toString(), '1');
+
+    // Fetch the history and verify that the operation is recorded
+    const fetchedHistoryAccount = await program.account.historyAccount.fetch(historyPDA);
+    assert.strictEqual(fetchedHistoryAccount.records.length, 1);
+
+    const record = fetchedHistoryAccount.records[0];
+    assert.strictEqual(record.finalValue.toString(), '1');
+    assert.deepStrictEqual(record.shiftDirection, { increment: {} });
   });
 
-  it("decrements the stored number", async () => {
+  // This test performs multiple shift operations and verifies that all operations are correctly recorded in history
+  it("increments and decrements the stored number, and verifies the history records", async () => {
     const shiftStoredNumAccounts = {
       authority: user.publicKey,
       userProfile: userProfilePDA,
@@ -121,6 +140,7 @@ describe("solana_num_flux", () => {
       systemProgram: SystemProgram.programId
     };
 
+    // Perform multiple shift operations
     await program.methods
       .shiftStoredNum({ increment: {} }) // Incremented to 2 (since it got already incremented to 1)
       .accounts(shiftStoredNumAccounts)
@@ -139,7 +159,19 @@ describe("solana_num_flux", () => {
       .signers([user])
       .rpc();
 
+    // Fetch and verify the stored num after the operations
     const fetchedStoredNumAccount = await program.account.storedNumAccount.fetch(storedNumPDA);
     assert.strictEqual(fetchedStoredNumAccount.storedNum.toString(), '2');
+
+    const fetchedHistoryAccount = await program.account.historyAccount.fetch(historyPDA);
+    assert.strictEqual(fetchedHistoryAccount.records.length, 4);
+
+    const firstRecord = fetchedHistoryAccount.records[1]; // Increment to 2
+    assert.strictEqual(firstRecord.finalValue.toString(), '2');
+    assert.deepStrictEqual(firstRecord.shiftDirection, { increment: {} });
+
+    const lastRecord = fetchedHistoryAccount.records[3]; // Decrement to 2
+    assert.strictEqual(lastRecord.finalValue.toString(), '2');
+    assert.deepStrictEqual(lastRecord.shiftDirection, { decrement: {} });
   });
 });
