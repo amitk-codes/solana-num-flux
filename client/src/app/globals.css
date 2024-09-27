@@ -34,6 +34,14 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.wallet-adapter-modal-wrapper{
+  background: #1b0e3b;
+}
+
+.wallet-adapter-modal-button-close{
+  background: #310c8b;
+}
+
 .increment-btn {
   --primary: 34, 197, 94;
   --secondary: 22, 101, 52;
