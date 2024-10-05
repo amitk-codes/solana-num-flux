@@ -25,7 +25,14 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .flex-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
+
 
 .absolute-center {
   position: absolute;
