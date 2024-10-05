@@ -1,8 +1,9 @@
 "use client";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Header } from "@/Layouts/Header";
-import ConnectWalletProvider from "@/Layouts/Header/ConnectWalletProvider";
+import { Header } from "@/app/Layouts/Header";
+import ConnectWalletProvider from "@/app/Layouts/Header/ConnectWalletProvider";
+import { SolanaAppProvider } from "./Providers/SolanaAppProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,8 +28,10 @@ export default function RootLayout({
       >
         <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
           <ConnectWalletProvider>
-            <Header />
-            {children}
+            <SolanaAppProvider>
+              <Header />
+              {children}
+            </SolanaAppProvider>
           </ConnectWalletProvider>
         </div>
       </body>

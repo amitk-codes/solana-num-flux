@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
-import { AppBar, Toolbar, Typography, Box } from '@mui/material';
+import React from 'react';
+import { AppBar, Toolbar } from '@mui/material';
 import "@solana/wallet-adapter-react-ui/styles.css"
 import dynamic from 'next/dynamic';
 import { MobileDrawer } from './MobileDrawer';
-import { useWallet } from '@solana/wallet-adapter-react';
+import InitializeButton from './InitializeButton';
 
 // dynamic import for Solana Wallet Button
 const WalletMultiButtonDynamic = dynamic(
@@ -12,8 +12,6 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 export const Header = () => {
-  const walletAdapter = useWallet();
-  const isInitializeBtnDisabled = useMemo(() => !(walletAdapter && walletAdapter.connected), [walletAdapter])
 
   return (
     <AppBar position="static" sx={{ backgroundColor: 'white', boxShadow: 1 }}>
@@ -26,15 +24,7 @@ export const Header = () => {
 
         <div className='hidden lg:flex gap-4'>
           {/* Initialize Button */}
-          <button
-            disabled={isInitializeBtnDisabled}
-            className={`border rounded font-bold px-6 shadow-[0_0_10px_0px_#512da8] active:shadow-none transition-all duration-300 min-h-[40px] 
-              ${isInitializeBtnDisabled
-                ? 'border-gray-400 text-gray-400 cursor-not-allowed shadow-none'
-                : 'border-theme-default text-theme-default'}`}
-          >
-            Initialize Profile
-          </button>
+          <InitializeButton />
 
           {/* Wallet Connect Button */}
           <WalletMultiButtonDynamic style={{ maxHeight: '40px' }} />
