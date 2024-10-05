@@ -1,0 +1,458 @@
+{
+  "address": "FFa222U5TqycjB4EBYF26NXMyrZHBoLNPMH842oLjHrV",
+  "metadata": {
+    "name": "solana_num_flux",
+    "version": "0.2.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "initialize_stored_num",
+      "discriminator": [
+        231,
+        54,
+        107,
+        231,
+        207,
+        180,
+        197,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "user_profile"
+          ]
+        },
+        {
+          "name": "user_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "stored_num_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  83,
+                  84,
+                  79,
+                  82,
+                  69,
+                  68,
+                  95,
+                  78,
+                  85,
+                  77,
+                  95,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "history_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  72,
+                  73,
+                  83,
+                  84,
+                  79,
+                  82,
+                  89,
+                  95,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_user",
+      "discriminator": [
+        111,
+        17,
+        185,
+        250,
+        60,
+        122,
+        38,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "shift_stored_num",
+      "discriminator": [
+        240,
+        184,
+        70,
+        133,
+        66,
+        215,
+        13,
+        57
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "user_profile",
+            "stored_num_account",
+            "history_account"
+          ]
+        },
+        {
+          "name": "user_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  85,
+                  83,
+                  69,
+                  82,
+                  95,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "stored_num_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  83,
+                  84,
+                  79,
+                  82,
+                  69,
+                  68,
+                  95,
+                  78,
+                  85,
+                  77,
+                  95,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "history_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  72,
+                  73,
+                  83,
+                  84,
+                  79,
+                  82,
+                  89,
+                  95,
+                  83,
+                  84,
+                  65,
+                  84,
+                  69
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "direction",
+          "type": {
+            "defined": {
+              "name": "ShiftDirection"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "HistoryAccount",
+      "discriminator": [
+        181,
+        163,
+        222,
+        254,
+        117,
+        87,
+        93,
+        83
+      ]
+    },
+    {
+      "name": "StoredNumAccount",
+      "discriminator": [
+        19,
+        210,
+        14,
+        98,
+        198,
+        118,
+        39,
+        111
+      ]
+    },
+    {
+      "name": "UserProfile",
+      "discriminator": [
+        32,
+        37,
+        119,
+        205,
+        179,
+        180,
+        13,
+        194
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "HistoryAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "records",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "OperationsRecord"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OperationsRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "final_value",
+            "type": "u64"
+          },
+          {
+            "name": "shift_direction",
+            "type": {
+              "defined": {
+                "name": "ShiftDirection"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShiftDirection",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Increment"
+          },
+          {
+            "name": "Decrement"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StoredNumAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "stored_num",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "HISTORY_TAG",
+      "type": "bytes",
+      "value": "[72, 73, 83, 84, 79, 82, 89, 95, 83, 84, 65, 84, 69]"
+    },
+    {
+      "name": "STORED_NUM_TAG",
+      "type": "bytes",
+      "value": "[83, 84, 79, 82, 69, 68, 95, 78, 85, 77, 95, 83, 84, 65, 84, 69]"
+    },
+    {
+      "name": "USER_TAG",
+      "type": "bytes",
+      "value": "[85, 83, 69, 82, 95, 83, 84, 65, 84, 69]"
+    }
+  ]
+}
