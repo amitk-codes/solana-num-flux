@@ -5,3 +5,5 @@ export const CONTRACT_PUBKEY = new PublicKey("FFa222U5TqycjB4EBYF26NXMyrZHBoLNPM
 export const USER_TAG = "USER_STATE";
 
 export const STORED_NUM_TAG = "STORED_NUM_STATE";
+
+export const HISTORY_TAG = "HISTORY_STATE"
