@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
       >
         <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
           <ConnectWalletProvider>

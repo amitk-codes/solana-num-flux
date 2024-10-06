@@ -57,7 +57,7 @@ export default function Homepage() {
 
   return (
     <main
-      className='flex flex-col items-center justify-center p-4 gap-6 absolute-center w-full'
+      className='flex flex-col items-center justify-center p-4 gap-6 absolute-center w-full min-h-svh'
     >
       {!isWalletConnected ? (
         <WalletNotConnect />

@@ -15,7 +15,7 @@ export const Header = () => {
 
   return (
     <AppBar position="static" sx={{ backgroundColor: 'white', boxShadow: 1 }}>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: "99" }}>
 
         {/* Logo */}
         <div className='text-xl font-bold bg-gradient-to-r from-teal-400 via-purple-500 to-pink-500 bg-clip-text text-transparent select-none'>
